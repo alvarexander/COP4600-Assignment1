@@ -16,7 +16,7 @@ int tick(int time_tick, int flag, int burst)
     
     if(flag == 1)
     {
-        time_tick+=burstl
+        time_tick+=burst;
         return time_tick;       
     }
    

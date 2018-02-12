@@ -21,17 +21,17 @@ int tick(int time_tick, int flag, int burst)
     }
    
 }
-
+// Alexander Alvarez
 void firstcomefirstServe(char *str)
 {
     return;
 }
-
+// Joy
 void roundRobin (char *str)
 {
     return;
 }
-
+// Brandon
 void shortestjobFirst(char *str)
 {
     return;

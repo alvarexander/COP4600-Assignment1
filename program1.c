@@ -6,9 +6,10 @@
 #include <string.h>
 #include <ctype.h>
 
-void processTicks(void)
+int processTicks(int tick)
 {
-    
+    tick+=1;
+    return tick;
 }
 
 void firstcomefirstServe(char *str)

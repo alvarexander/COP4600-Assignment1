@@ -6,10 +6,20 @@
 #include <string.h>
 #include <ctype.h>
 
-int processTicks(int tick)
+int tick(int time_tick, int flag, int burst)
 {
-    tick+=1;
-    return tick;
+    if(flag == 0)
+    {
+         time_tick+=1;
+         return time_tick;
+    }
+    
+    if(flag == 1)
+    {
+        time_tick+=burstl
+        return time_tick;       
+    }
+   
 }
 
 void firstcomefirstServe(char *str)

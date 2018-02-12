@@ -52,7 +52,6 @@ int main (void)
         printf("Error: File missing or corrupted\n.");
         exit (1);
     }
-
      // Take in the text one character at a time.
     while((fscanf(input_file,"%c",&buffer[i]))!=EOF) //scanf and check EOF
     {

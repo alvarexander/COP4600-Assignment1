@@ -6,6 +6,10 @@
 #include <string.h>
 #include <ctype.h>
 
+void processTicks(void)
+{
+    
+}
 
 void firstcomefirstServe(char *str)
 {

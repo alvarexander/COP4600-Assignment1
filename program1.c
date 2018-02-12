@@ -37,9 +37,80 @@ void shortestjobFirst(char *str)
     return;
 }
 
-void processFile(char *str)
+char processFile(char *buffer, int size)
 {
+    int i, x = 0, y = 0, flag = 0;
+    char infobuff[500], info[500];
 
+    //parse out comments    
+    for(i = 0; i < size; i++)
+    {
+        if(buffer[i] == '#')
+        {
+            while(buffer[i] != '\n')
+            {
+                i++;
+            }
+        }
+
+           infobuff[x++] = buffer[i];
+
+        if(buffer[i] == 't' && buffer[i+1] == ' ')
+        {
+            info[y++] = buffer[i+2];
+            info[y++] = '\n';
+        } 
+        if (buffer [i] == 'l' && buffer[i+1] == ' ')
+        {
+            info[y++] = buffer[i+2];
+            info[y++] = '\n';
+        }
+        if(buffer[i] == 'm' && buffer[i+1] == ' ')
+        {
+            info[y++] = buffer[i+2];
+            info[y++] = '\n';
+        }
+        if(buffer[i] == 'e'&& buffer[i-1] == 's' && buffer[i+1] == ' ')
+        {
+            info[y++] = buffer[i+2];
+            info[y++] = '\n';
+
+            if(info[y-1] == 's')
+                flag = 1;
+            else if(info[y-1] == 'f')
+                flag = 2;
+        }
+
+        if(buffer[i] == 'e' && buffer[i-1] == 'm' && buffer[i+1] == ' ')
+        {
+            i+=2;
+            while(buffer[i] != ' ')
+            {
+                info[y++] = buffer[i++];
+
+            }
+
+            info[y++] = '\n';
+        }
+
+        if(buffer[i] == 'r'&& buffer[i-1] == 'o' && buffer[i+1] == ' ')
+        {
+            info[y++] = buffer[i+2];
+             info[y++] = buffer[i+3];
+             info[y++] = '\n';
+        }
+
+     
+        
+    }
+
+
+
+    for(i = 0; i < strlen(info);i++)
+    printf("%c", info[i]);
+    
+
+    return *info;
 }
 
 int main (void)
@@ -47,7 +118,7 @@ int main (void)
     FILE *input_file;
     char buffer [1000];
     int flag = 0, i = 0;
-    int size;
+    int size = 0;
 
     if(buffer == NULL)
     {
@@ -70,7 +141,9 @@ int main (void)
 
     fclose(input_file);
 
-    processFile(buffer);
+    size = strlen(buffer);
+   
+    processFile(buffer,size);
    
     if(flag == 0)
     {

@@ -24,6 +24,7 @@ int tick(int time_tick, int flag, int burst)
 // Alexander Alvarez
 void firstcomefirstServe(char *info)
 {
+   
     return;
 }
 // Joy
@@ -100,23 +101,25 @@ char processFile(char *buffer, int size)
 
         if(buffer[i] == 'r'&& buffer[i-1] == 'o' && buffer[i+1] == ' ')
         {
-            info[y++] = buffer[i+2];
+             info[y++] = buffer[i+2];
              info[y++] = buffer[i+3];
              info[y++] = '\n';
         }    
     }
     
     if(flag == 0)
-        rounRobin(info);
+        roundRobin(info);
+    
     else if(flag == 1)
         shortestjobFirst(info);
+    
     else
         firstcomefirstServer(info);
 
 
 
-    for(i = 0; i < strlen(info);i++)
-    printf("%c", info[i]);
+   // for(i = 0; i < strlen(info);i++)
+   // printf("%c", info[i]);
     
 
     return *info;

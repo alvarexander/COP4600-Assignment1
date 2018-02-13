@@ -53,23 +53,29 @@ char processFile(char *buffer, int size)
             }
         }
 
+        // Take out the comments and store in strong
            infobuff[x++] = buffer[i];
 
+        // Parse the string for only relevant information
+        // ProcessCount
         if(buffer[i] == 't' && buffer[i+1] == ' ')
         {
             info[y++] = buffer[i+2];
             info[y++] = '\n';
         } 
+        // Arrival Time
         if (buffer [i] == 'l' && buffer[i+1] == ' ')
         {
             info[y++] = buffer[i+2];
             info[y++] = '\n';
         }
+        //Quantum
         if(buffer[i] == 'm' && buffer[i+1] == ' ')
         {
             info[y++] = buffer[i+2];
             info[y++] = '\n';
         }
+        // Use
         if(buffer[i] == 'e'&& buffer[i-1] == 's' && buffer[i+1] == ' ')
         {
             info[y++] = buffer[i+2];
@@ -80,7 +86,7 @@ char processFile(char *buffer, int size)
             else if(info[y-1] == 'f')
                 flag = 2;
         }
-
+        //Process name
         if(buffer[i] == 'e' && buffer[i-1] == 'm' && buffer[i+1] == ' ')
         {
             i+=2;
@@ -89,7 +95,6 @@ char processFile(char *buffer, int size)
                 info[y++] = buffer[i++];
 
             }
-
             info[y++] = '\n';
         }
 
@@ -98,10 +103,7 @@ char processFile(char *buffer, int size)
             info[y++] = buffer[i+2];
              info[y++] = buffer[i+3];
              info[y++] = '\n';
-        }
-
-     
-        
+        }    
     }
     
     if(flag == 0)

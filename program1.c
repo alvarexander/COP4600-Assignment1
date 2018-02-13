@@ -114,7 +114,7 @@ char processFile(char *buffer, int size)
         shortestjobFirst(info);
     
     else
-        firstcomefirstServer(info);
+        firstcomefirstServe(info);
 
 
 

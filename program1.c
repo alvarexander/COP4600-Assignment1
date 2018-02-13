@@ -22,17 +22,17 @@ int tick(int time_tick, int flag, int burst)
    
 }
 // Alexander Alvarez
-void firstcomefirstServe(char *str)
+void firstcomefirstServe(char *info)
 {
     return;
 }
 // Joy
-void roundRobin (char *str)
+void roundRobin (char *info)
 {
     return;
 }
 // Brandon
-void shortestjobFirst(char *str)
+void shortestjobFirst(char *info)
 {
     return;
 }
@@ -103,6 +103,13 @@ char processFile(char *buffer, int size)
      
         
     }
+    
+    if(flag == 0)
+        rounRobin(info);
+    else if(flag == 1)
+        shortestjobFirst(info);
+    else
+        firstcomefirstServer(info);
 
 
 
@@ -145,18 +152,6 @@ int main (void)
    
     processFile(buffer,size);
    
-    if(flag == 0)
-    {
-        firstcomefirstServe(buffer);
-    }
-
-    else if(flag == 1)
-    {
-        roundRobin(buffer);
-    }
-
-    else
-        shortestjobFirst(buffer);
 
     return 0;
 }

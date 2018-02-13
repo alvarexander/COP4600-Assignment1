@@ -99,6 +99,7 @@ char processFile(char *buffer, int size)
             info[y++] = '\n';
         }
 
+        //Run for
         if(buffer[i] == 'r'&& buffer[i-1] == 'o' && buffer[i+1] == ' ')
         {
              info[y++] = buffer[i+2];
@@ -116,12 +117,9 @@ char processFile(char *buffer, int size)
     else
         firstcomefirstServe(info);
 
-
-
    // for(i = 0; i < strlen(info);i++)
    // printf("%c", info[i]);
     
-
     return *info;
 }
 
@@ -129,8 +127,7 @@ int main (void)
 {
     FILE *input_file;
     char buffer [1000];
-    int flag = 0, i = 0;
-    int size = 0;
+    int i = 0, size = 0;
 
     if(buffer == NULL)
     {
@@ -157,6 +154,5 @@ int main (void)
    
     processFile(buffer,size);
    
-
     return 0;
 }

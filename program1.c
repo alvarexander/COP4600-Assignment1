@@ -82,9 +82,9 @@ char processFile(char *buffer, int size)
             info[y++] = buffer[i+2];
             info[y++] = '\n';
 
-            if(info[y-1] == 's')
+            if(info[y-2] == 's')
                 flag = 1;
-            else if(info[y-1] == 'f')
+            else if(info[y-2] == 'f')
                 flag = 2;
         }
         //Process name

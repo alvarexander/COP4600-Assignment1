@@ -6,6 +6,18 @@
 #include <string.h>
 #include <ctype.h>
 
+typedef struct
+{
+	int processCount; 	// Process Count		
+	char name[500];	    // Process names
+    char use[20];       // Use SJF, RR, FCFS
+    int arrivals;   // Arrrival Times
+    int bursts;	    // Burst Times
+	int quantum; 		// Quantums if applicable
+
+} figures;
+
+
 int tick(int time_tick, int flag, int burst)
 {
     if(flag == 0)
@@ -128,6 +140,8 @@ int main (void)
     FILE *input_file;
     char buffer [1000];
     int i = 0, size = 0;
+    
+    figures processes[100]; // An array of processes based on data structure/class
 
     if(buffer == NULL)
     {

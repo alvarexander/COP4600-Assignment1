@@ -6,16 +6,6 @@
 #include <string.h>
 #include <ctype.h>
 
-typedef struct
-{
-	int processCount; 	// Process Count		
-	char name[500];	    // Process names
-    	char use[20];       // Use SJF, RR, FCFS
-    	int arrivals;   // Arrrival Times
-    	int bursts;	    // Burst Times
-	int quantum; 		// Quantums if applicable
-} figures;
-
 
 int tick(int time_tick, int flag, int burst)
 {
@@ -35,7 +25,6 @@ int tick(int time_tick, int flag, int burst)
 // Alexander Alvarez
 void firstcomefirstServe(char *info)
 {
-   
     return;
 }
 // Joy

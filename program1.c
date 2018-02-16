@@ -94,8 +94,187 @@ int rear(struct rrQueue * rrQueue)
 }
 
 // Alexander Alvarez
+// Takes in string of required information obtained from file and simulates First Come First Serve scheduling
+// Outputs "processes.out"
 void firstcomefirstServe(char *info)
 {
+	FILE *ofp;
+	int size = 0, count = 0, currTime = 0, arrived = 0, completed = 0, firstSelection = 0;
+
+	int processCount = 0, timeUnits = 0;
+
+	ofp = fopen("processes.out", "w");
+
+	// The processed string info will contain the processcout, timeunits, and quantum (if applicable) in that order
+	processCount = atoi(&info[0]);
+
+	timeUnits = atoi(&info[1]);
+
+	 
+	fprintf(ofp, "%d processes\n", processCount);
+	fprintf(ofp, "Using First Come First Serve!\n");
+
+	size = 3 + (3 *processCount);
+
+	char * buffer[size];
+
+	buffer[count] = strtok(info, "\n");
+
+	while (buffer[count] != NULL)
+	{
+		buffer[++count] = strtok(NULL, "\n");
+	}
+
+
+	char * processNames[processCount];
+	int processBurst[processCount];
+	int processArrival[processCount];
+	int processWait[processCount];
+	int processTurn[processCount];
+	
+
+	int burstCount = 0;
+	int nameCount = 0;
+	int arrivalCount = 0;
+	int j, timebuff = 0;
+	int waitCount = 0;
+	int turnaroundCount = 0;
+
+	for (int i = 4; i < size; i += 3)
+	{
+
+		processNames[nameCount] = buffer[i - 1];
+		nameCount++;
+		processArrival[arrivalCount] = atoi(buffer[i]);
+		arrivalCount++;
+		processBurst[burstCount] = atoi(buffer[i + 1]);
+		burstCount++;
+		processWait[waitCount] = 0;
+		waitCount++;
+		processTurn[turnaroundCount] = 0;
+		turnaroundCount++;
+
+	}
+
+
+	int tempArr = 0, tempBurst = 0, x = 0,i = 0;
+	char *tempname[100];
+
+
+	// Call an O(n^2) algorithm to sort by arrival, will make processing easier
+	for (i = 0; i < processCount; ++i)
+	{
+		for (j = 0; j < processCount - i - 1; ++i)
+		{
+			//BubbleSort by Arrival Time
+
+			if (processArrival[i] > processArrival[i + 1])
+			{
+				tempArr = processArrival[i];
+				tempBurst = processBurst[i];
+				tempname[x] = processNames[i];
+			
+
+				processArrival[i] = processArrival[i + 1];
+				processBurst[i] = processBurst[i + 1];
+				processNames[i] = processNames[i+1];
+
+				processArrival[i + 1] = tempArr;
+				processBurst[i + 1] = tempBurst;
+				processNames[i + 1] = tempname[x];
+
+				x++;
+			}
+		}
+
+	}
+
+	printf("Bubble Sorted by Arrival Times\n");
+	for (i = 0; i < processCount; i++)
+	{
+			printf("Name[%d] = %s, Arrival[%d] = %d, Burst[%d] = %d\n", i, processNames[i], i, processArrival[i], i, processBurst[i]);
+
+	}
+
+	
+	while (currTime <= timeUnits)
+	{
+	
+		for (int i = 0; i < processCount; i++)
+		{
+		
+			if (currTime == processArrival[i])
+			{
+				
+					fprintf(ofp, "Time %d: %s arrived\n", currTime, processNames[i]);
+					firstSelection = 1;
+					arrived++;
+			}
+
+			;
+			if (firstSelection && arrived > 0)
+			{
+				if (i > 0)
+					currTime -= 1;
+					
+				
+				fprintf(ofp, "Time %d: %s selected (burst %d)\n", currTime, processNames[i], processBurst[i]);
+
+				processWait[i] = currTime - processArrival[i];
+				processTurn[i] = processBurst[i] + processWait[i];
+
+				if (i != processCount)
+				{
+					for (x = arrived; x < processCount; x++)
+					{
+						if (processArrival[x] < currTime + processBurst[i])
+							{
+								fprintf(ofp, "Time %d: %s arrived\n", processArrival[x], processNames[x]);
+								arrived++;
+
+							}
+
+					}
+				}
+				currTime += processBurst[i];
+				fprintf(ofp, "Time %d: %s finished\n", currTime, processNames[i]);
+				completed++;
+				
+
+			}
+			
+			if (firstSelection && arrived == 0)
+			{
+				
+				fprintf(ofp,"Time %d: IDLE\n", currTime);
+
+				currTime++;
+			}
+
+			if (completed == processCount && currTime+1 <= timeUnits)
+			{
+	
+				while (currTime+1 <= timeUnits)
+				{
+					currTime++;
+
+					fprintf(ofp, "Time %d: IDLE\n", currTime);
+				}
+
+
+			}
+
+			currTime++;
+		}
+
+		fprintf(ofp, "\n");
+		for (int i = 0; i < processCount; i++)
+			fprintf(ofp,"%s wait %d turnaround %d\n", processNames[i], processWait[i],processTurn[i] );
+
+	} 
+
+	fclose(ofp);
+	
     return;
 }
 
@@ -762,7 +941,10 @@ void shortestjobFirst(char *info)
 
     return;
 }
-
+//Alexander Alvarez
+// This takes a string containing all the characters found in "processes.in" and -
+// parses out appropriate information and stores in into a string one line at a time -
+// deliniated by a new line character
 char processFile(char *buffer, int size)
 {
     int i, x = 0, y = 0, flag = 0;

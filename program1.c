@@ -1,6 +1,6 @@
 // Program 1: First Come First Serve, Round Robin, Shortest Job First - Schedulers
 // COP4600 - University of Central Florida
-// Group 35: Brandon Bradley, Joy Weaver, Alexander Alvarez 
+// Group 35: Brandon Bradley,Alexander Alvarez 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

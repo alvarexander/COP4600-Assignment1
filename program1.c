@@ -7,8 +7,8 @@
 #include <ctype.h>
 
 //Queue struct for Round Robin scheduler
-struct rrQueue {
-
+struct rrQueue 
+{
       int front;
       int rear;
       int size;
@@ -17,8 +17,8 @@ struct rrQueue {
 };
 
 //Create the rrQueue array
-struct rrQueue * createrrQueue(unsigned capacity) {
-
+struct rrQueue * createrrQueue(unsigned capacity) 
+{
       struct rrQueue* rrQueue = (struct rrQueue*) malloc(sizeof(struct rrQueue));
       rrQueue->capacity = capacity;
       rrQueue->front = 0;
@@ -26,7 +26,6 @@ struct rrQueue * createrrQueue(unsigned capacity) {
       rrQueue->rear = capacity - 1;
       rrQueue->array = (int*) malloc(rrQueue->capacity * sizeof(int));
       return rrQueue;
-
 }
 //When queue size is equal to capacity, the queue is full
 int isrrQueueFull(struct rrQueue * rrQueue) {
@@ -36,19 +35,17 @@ int isrrQueueFull(struct rrQueue * rrQueue) {
 }
 
 //When the queue size is 0, the queue is empty
-int isrrQueueEmpty(struct rrQueue * rrQueue) {
-
+int isrrQueueEmpty(struct rrQueue * rrQueue) 
+{
     return (rrQueue->size == 0);
-
 }
 
 //Adds a process to the rrQueue
 void enqueue(struct rrQueue* rrQueue, int processIndex)
 {
-    if (isrrQueueFull(rrQueue)) {
-
+    if (isrrQueueFull(rrQueue)) 
+    {
         return;
-
     }
     rrQueue->rear = (rrQueue->rear + 1)%rrQueue->capacity;
     rrQueue->array[rrQueue->rear] = processIndex;
@@ -60,8 +57,8 @@ void enqueue(struct rrQueue* rrQueue, int processIndex)
 //Removes an item from the rrQueue
 int dequeue(struct rrQueue * rrQueue)
 {
-    if (isrrQueueEmpty(rrQueue)) {
-
+    if (isrrQueueEmpty(rrQueue)) 
+    {
         return INT_MIN;
     }
 
@@ -74,8 +71,8 @@ int dequeue(struct rrQueue * rrQueue)
 //Returns the front of rrQueue
 int front(struct rrQueue * rrQueue)
 {
-    if (isrrQueueEmpty(rrQueue)) {
-
+    if (isrrQueueEmpty(rrQueue)) 
+    {
         return INT_MIN;
     }
 
@@ -85,8 +82,8 @@ int front(struct rrQueue * rrQueue)
 //Returns the rear of rrQueue
 int rear(struct rrQueue * rrQueue)
 {
-    if (isrrQueueEmpty(rrQueue)) {
-
+    if (isrrQueueEmpty(rrQueue))
+    {
         return INT_MIN;
     }
 
@@ -189,13 +186,6 @@ void firstcomefirstServe(char *info)
 
 	}
 
-	printf("Bubble Sorted by Arrival Times\n");
-	for (i = 0; i < processCount; i++)
-	{
-			printf("Name[%d] = %s, Arrival[%d] = %d, Burst[%d] = %d\n", i, processNames[i], i, processArrival[i], i, processBurst[i]);
-
-	}
-
 	
 	while (currTime <= timeUnits)
 	{
@@ -203,15 +193,15 @@ void firstcomefirstServe(char *info)
 		for (int i = 0; i < processCount; i++)
 		{
 		
+			// First process to arrive
 			if (currTime == processArrival[i])
 			{
-				
-					fprintf(ofp, "Time %d: %s arrived\n", currTime, processNames[i]);
-					firstSelection = 1;
-					arrived++;
+				fprintf(ofp, "Time %d: %s arrived\n", currTime, processNames[i]);
+				firstSelection = 1;
+				arrived++;
 			}
 
-			;
+			
 			if (firstSelection && arrived > 0)
 			{
 				if (i > 0)
@@ -242,22 +232,20 @@ void firstcomefirstServe(char *info)
 				
 
 			}
-			
+			// If no process has been selected or arrived, run idly
 			if (firstSelection && arrived == 0)
 			{
-				
 				fprintf(ofp,"Time %d: IDLE\n", currTime);
-
 				currTime++;
 			}
 
+			// If all processes are marked as completed, contunue to run idly until time unit has been reached
 			if (completed == processCount && currTime+1 <= timeUnits)
 			{
-	
+				// Ensure that incrementing the time counter will not exceed the time units
 				while (currTime+1 <= timeUnits)
 				{
 					currTime++;
-
 					fprintf(ofp, "Time %d: IDLE\n", currTime);
 				}
 

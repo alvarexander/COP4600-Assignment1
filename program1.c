@@ -248,8 +248,6 @@ void firstcomefirstServe(char *info)
 					currTime++;
 					fprintf(ofp, "Time %d: IDLE\n", currTime);
 				}
-
-
 			}
 
 			currTime++;
@@ -321,7 +319,7 @@ void roundRobin (char *info)
 
 
 
-  getchar();
+
 
   //i=2 -- useRR, has already been processed. Ignore.
   //i=3 -- Quantum is present for RR.

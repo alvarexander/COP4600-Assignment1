@@ -6,7 +6,92 @@
 #include <string.h>
 #include <ctype.h>
 
+//Queue struct for Round Robin scheduler
+struct rrQueue {
 
+      int front;
+      int rear;
+      int size;
+      unsigned capacity;
+      int * array;
+};
+
+//Create the rrQueue array
+struct rrQueue * createrrQueue(unsigned capacity) {
+
+      struct rrQueue* rrQueue = (struct rrQueue*) malloc(sizeof(struct rrQueue));
+      rrQueue->capacity = capacity;
+      rrQueue->front = 0;
+      rrQueue->size = 0;
+      rrQueue->rear = capacity - 1;
+      rrQueue->array = (int*) malloc(rrQueue->capacity * sizeof(int));
+      return rrQueue;
+
+}
+//When queue size is equal to capacity, the queue is full
+int isrrQueueFull(struct rrQueue * rrQueue) {
+
+    return (rrQueue->size == rrQueue->capacity);
+
+}
+
+//When the queue size is 0, the queue is empty
+int isrrQueueEmpty(struct rrQueue * rrQueue) {
+
+    return (rrQueue->size == 0);
+
+}
+
+//Adds a process to the rrQueue
+void enqueue(struct rrQueue* rrQueue, int processIndex)
+{
+    if (isrrQueueFull(rrQueue)) {
+
+        return;
+
+    }
+    rrQueue->rear = (rrQueue->rear + 1)%rrQueue->capacity;
+    rrQueue->array[rrQueue->rear] = processIndex;
+    rrQueue->size = rrQueue->size + 1;
+    //printf("%d enqueued to rrQueue\n", processIndex);
+
+}
+
+//Removes an item from the rrQueue
+int dequeue(struct rrQueue * rrQueue)
+{
+    if (isrrQueueEmpty(rrQueue)) {
+
+        return INT_MIN;
+    }
+
+    int processIndex = rrQueue->array[rrQueue->front];
+    rrQueue->front = (rrQueue->front + 1)%rrQueue->capacity;
+    rrQueue->size = rrQueue->size - 1;
+    return processIndex;
+}
+
+//Returns the front of rrQueue
+int front(struct rrQueue * rrQueue)
+{
+    if (isrrQueueEmpty(rrQueue)) {
+
+        return INT_MIN;
+    }
+
+    return rrQueue->array[rrQueue->front];
+}
+
+//Returns the rear of rrQueue
+int rear(struct rrQueue * rrQueue)
+{
+    if (isrrQueueEmpty(rrQueue)) {
+
+        return INT_MIN;
+    }
+
+    return rrQueue->array[rrQueue->rear];
+}
 
 // Alexander Alvarez
 void firstcomefirstServe(char *info)

@@ -7,30 +7,429 @@
 #include <ctype.h>
 
 
-int tick(int time_tick, int flag, int burst)
-{
-    if(flag == 0)
-    {
-         time_tick+=1;
-         return time_tick;
-    }
-    
-    if(flag == 1)
-    {
-        time_tick+=burst;
-        return time_tick;       
-    }
-   
-}
+
 // Alexander Alvarez
 void firstcomefirstServe(char *info)
 {
     return;
 }
-// Joy
+
+//Brandon Bradley
+//University of Central Florida
+
+//Function takes in a char array as input and simulates
+//the round robin scheduling algorithm
+//Outputs in processes.out file
 void roundRobin (char *info)
 {
-    return;
+  //For file output
+  FILE *fp;
+  fp = fopen("processes.out", "w");
+
+  for (int c = 0; c < strlen(info); c++) {
+
+      printf("%s\n", &info[c]);
+  }
+
+  //i=0 -- guaranteed to be processCount from processFile function call
+  int processCount = atoi(&info[0]);
+
+  //i=1 -- guaranteed to be timeUnits
+  int numTimeUnits = atoi(&info[1]);
+
+  printf("%i Processes\n", processCount);
+  printf("Using Round Robin\n");
+  //printf("Number of time units is %i\n", numTimeUnits);
+  //i=3 -- guaranteed to be Quantum
+  int quantum = atoi(&info[6]);
+  printf("Quantum %i\n\n", quantum);
+
+
+  fprintf(fp, "%i Processes\n", processCount);
+  fprintf(fp, "Using Round Robin\n");
+  fprintf(fp, "Quantum %i\n\n", quantum);
+
+  //Create the new tokenized array
+  int arrayLen = 3+(3*processCount);
+  char * array[arrayLen];
+  int count = 0;
+
+  array[count] = strtok(info,"\n\r");
+
+  while(array[count] != NULL)
+  {
+     array[++count] = strtok(NULL,"\n\r");
+  }
+
+  /*
+  for (int a = 0; a < count; a++) {
+      printf("%s\n", array[a]);
+  }
+  */
+
+
+
+  getchar();
+
+  //i=2 -- useRR, has already been processed. Ignore.
+  //i=3 -- Quantum is present for RR.
+  //i=4 -- guaranteed to be processName, and every i=4+3 for each processCount
+  //i=5 -- guaranteed to be arrivalTime, and every i=5+3 for each processCount
+  //i=6 -- guaranteed to be burstTime, and every i=6+3 for each processCount
+
+  //Store Processes in new array
+  //Logical representation Arr-Burst - [arrivalTime0][burstTime0][arrivalTime1][burstTime1]...[arrivalTimeN][burstTimeN]
+  //Logical representation ProNames -  [P* i=0 n=0 ][P* i=2 n=1 ][P* i=4 n=2  ][P* i=6 n=3]
+  //We need to keep track of the process names and corresponding locations for output
+  //We can associate each arrivalTime with process name in a char array. So processNames[i] = processes[i/2] where i is index +=2
+  //Create the new arrays and counts
+  char * processNames[processCount];
+  int processes[2*processCount];
+  int processesCount = 0;
+  int processNameCount = 0;
+
+  //We also need wait and turnaround times for each process
+  //Logical representation Wait-TurnAround - [waitTime0][turnaroundTime0]...[waitTimeN][turnaroundTimeN]
+  //Using this method we can track the process names in the same manner as usual
+  //Turnaround time = timeFinished - timeArrived (processes[i])
+  //Wait time = turnaroundTime - burstTime (processes[i+1])
+  //We also need the original burstTimes since we will modify the array
+  int times[2*processCount];
+  int immutableProcesses[2*processCount];
+
+  //Store the data in the new arrays
+  for (int i = 5; i < arrayLen; i+=3) {
+
+      processNames[processNameCount] = array[i-1];
+      processNameCount++;
+      processes[processesCount] = atoi(array[i]);
+      immutableProcesses[processesCount] = atoi(array[i]);
+      processesCount++;
+      processes[processesCount] = atoi(array[i+1]);
+      immutableProcesses[processesCount] = atoi(array[i+1]);
+      processesCount++;
+
+
+  }
+
+  //We are ready for the Round Robin Scheduler
+  //Need init time at 0
+  int currentTime = 0;
+
+  //Need a queue to hold the processes
+  struct rrQueue * rrQueue = createrrQueue(processCount);
+
+  //Need to know when the first process is selected
+  int selectedFirstProcess = 0;
+
+  //Need to know when all processes are finished
+  int numProcessesFinished = 0;
+
+  //Need to know if the scheduler is idle BETWEEN processes after selecting first process
+  int numProcessesArrived = 0;
+
+  //Need to know if current job is the same job as the last time unit
+  int lastExecutedProcessIndex = -1;
+
+  //Need to know if we are in the middle of executing a burst
+  int executingBurst = 0;
+
+  //Need to know the length of time we are executing burst -- and modify it
+  int executingBurstTime = quantum;
+
+  //Break from second loop after arrival checks for each time unit
+  int breakForExecution = 0;
+
+  //If a process has finished it is ok to select the next process
+  int bypassExecutionForSelection = 0;
+
+  //Less than as currentTime begins at zero
+  while (currentTime < numTimeUnits) {
+
+      if (executingBurst) {
+
+          //printf("We are currently executing burst. Current time: %i\n.", currentTime);
+          executingBurstTime--;
+          //printf("Current executing burst time left is %i\n", executingBurstTime);
+      }
+
+      if (executingBurstTime == 0) {
+
+          executingBurst = 0;
+          breakForExecution = 0;
+          //printf("Executing burst has finished. Current time: %i\n", currentTime);
+
+          //Enqueue the process again if it has not finished
+
+          if (processes[lastExecutedProcessIndex+1] != 0 ) {
+
+              enqueue(rrQueue, lastExecutedProcessIndex);
+
+          }
+      }
+
+      //We are checking each processes arrival time and burstTime on each iteration
+      for (int i = 0; i < (2*processCount); i+=2) {
+
+              if (breakForExecution)
+                  break;
+
+              //The arrival time is equal to the current time --, output Time N: STRING arrived
+              //We need to account for processes that arrive at the same time
+              for (int j = 0; j < (2*processCount); j+=2) {
+
+                  //THE INDEX OF THE ARRIVAL TIME OF THE PROCESS IS WHAT IS STORED IN THE QUEUE
+                  //We need to check arrivals on each iteration of time
+                  //We can not select while executingBurst but we can let processes arrive and get added to the queue
+                  if (currentTime == processes[j] && processes[j+1] != 0) {
+
+                        int addedToQueue = 0;
+
+                        for (int q = 0; q < rrQueue->size; q++) {
+
+                            if (rrQueue->array[q] == j) {
+
+                                addedToQueue = 1;
+
+                                //printf("This process is already in the queue.\n");
+                            }
+                        }
+
+                        if (!addedToQueue) {
+
+                            printf("Time %i: %s arrived\n", currentTime, processNames[((j)/2)]);
+                            fprintf(fp, "Time %i: %s arrived\n", currentTime, processNames[(j)/2]);
+
+                            selectedFirstProcess = 1;
+
+                            numProcessesArrived++;
+
+                            //Add the process to the queue
+                            //We are going to store the arrival index to stay consistent with SJF scheduler
+                            enqueue(rrQueue, j);
+
+                      }
+
+                  }
+              }
+
+              if (executingBurst && bypassExecutionForSelection == 0) {
+
+                  //printf("Executing burst. Breaking from loop after arrival checks.\n");
+                  breakForExecution = 1;
+                  currentTime++;
+                  break;
+              }
+
+              //In this case we are idling this time unit BETWEEN processes as all processes
+              //are not finished and we have checked all arrival times
+              if (selectedFirstProcess && numProcessesArrived == 0 && numProcessesFinished != processCount && !executingBurst) {
+
+                  //Output Time N: IDLE
+                  printf("Time %i: IDLE\n", currentTime);
+                  fprintf(fp, "Time %i: IDLE\n", currentTime);
+
+                  //We are done with the current time unit
+                  currentTime++;
+
+                  break;
+
+              }
+
+              //In this case we are idling at zero time unit, BEFORE any processes have arrived
+              //and we have checked all arrival times
+              if (!selectedFirstProcess && numProcessesArrived == 0 && numProcessesFinished != processCount && !executingBurst) {
+
+                  //Output Time N: IDLE
+                  printf("Time %i: IDLE\n", currentTime);
+                  fprintf(fp, "Time %i: IDLE\n", currentTime);
+
+                  //We are done with the current time unit
+                  currentTime++;
+
+                  break;
+
+              }
+
+              //In this case we are idling, AFTER ALL processes have finished
+              //and we have checked all arrival times
+              if (selectedFirstProcess && numProcessesArrived == 0 && numProcessesFinished == processCount && !executingBurst) {
+
+                  //Output Time N: IDLE
+                  printf("Time %i: IDLE\n", currentTime);
+                  fprintf(fp, "Time %i: IDLE\n", currentTime);
+
+                  //We are done with the current time unit
+                  currentTime++;
+
+                  break;
+
+              }
+
+              //We only start selecting processes once the first process arrives AND we should NOT be idling
+              if (selectedFirstProcess && numProcessesArrived > 0 && executingBurst == 0) {
+
+                      //Now we know we have an item(s) in the queue and it is available to execute this time unit
+
+                      //Output Time N: STRING selected (burst PROCESSES[j+1])
+                      printf("Time %i: %s selected (burst %i)\n", currentTime, processNames[(front(rrQueue))/2], processes[front(rrQueue)+1]);
+                      fprintf(fp, "Time %i: %s selected (burst %i)\n", currentTime, processNames[(front(rrQueue))/2], processes[front(rrQueue)+1]);
+
+                      //Reset the execution bypass for selection
+                      bypassExecutionForSelection = 0;
+
+                      //Get the current burst time of the selected job
+                      int curBurstTime = processes[front(rrQueue)+1];
+
+                      //printf("The burstTime of the currently selected process is: %i\n", curBurstTime);
+
+                      //This is the end for this process, update and output Time N: STRING finished
+                      //Once we enter this burst we can check for arrivals but are otherwise locked
+                      if (curBurstTime <= quantum) {
+
+                          //Since we go by quantum, the time increment can change depending on the curBurstTime
+                          int variableQuantumTimeIncrease = 0;
+
+                          //This process will end at zero burst time, currentTime will increment by normal quantum
+                          if (curBurstTime == quantum) {
+
+                              variableQuantumTimeIncrease = quantum;
+                          }
+
+                          //This process has less burst time left than the quantum
+                          else if (curBurstTime < quantum) {
+
+                              variableQuantumTimeIncrease = quantum - curBurstTime;
+
+                          }
+
+                          //Set the process's burstTime to zero
+                          processes[front(rrQueue)+1] = 0;
+
+                          //Save before we dequeue
+                          int arrivalIndex = front(rrQueue);
+
+                          //Take it off the queue, should not be added back in since its burst time is zero
+                          dequeue(rrQueue);
+
+                          //Set this job as the last executed
+                          lastExecutedProcessIndex = arrivalIndex;
+
+                          //Set flags and time for burst execution phase
+                          executingBurst = 1;
+                          executingBurstTime = variableQuantumTimeIncrease;
+
+                          //We are done with the current time unit
+                          currentTime++;
+
+                          //Remember arrivalIndex is actually arrival time, /2 for corresponding process name
+                          printf("Time %i: %s finished\n", currentTime, processNames[((arrivalIndex)/2)]);
+                          fprintf(fp, "Time %i: %s finished\n", currentTime, processNames[((arrivalIndex)/2)]);
+
+                          //Increment the number of processes finished
+                          numProcessesFinished++;
+
+                          //Decrement the number of arrived processes
+                          numProcessesArrived--;
+
+                          //A process has finished and we need to select the next one
+                          bypassExecutionForSelection = 1;
+
+                          //Store turnaroundTime = FINISHED-ARR, shortestJobIndex is burstTime
+                          //Logical representation
+                          //[a][b][a][b]
+                          //[w][t][w][t]
+                          int turnaroundTime = currentTime - processes[arrivalIndex];
+                          times[arrivalIndex+1] = turnaroundTime;
+
+                          //Calculate waitTime = TAT-BURST
+                          int waitTime = turnaroundTime - immutableProcesses[arrivalIndex+1];
+                          times[arrivalIndex] = waitTime;
+
+                      }
+
+                      //If the burst time is greater than the quantum decrement it
+                      else if (curBurstTime > quantum) {
+
+                          //Decrement the current processes burst time and store it in the array
+                          curBurstTime = curBurstTime - quantum;
+                          processes[front(rrQueue)+1] = curBurstTime;
+
+                          //Set flags and time for burst execution phase
+                          executingBurst = 1;
+                          executingBurstTime = quantum;
+
+                          //Save this before we dequeue
+                          int arrivalIndex = front(rrQueue);
+
+                          //Dequeue the process
+                          dequeue(rrQueue);
+
+                          //Set this job as the last executed index
+                          lastExecutedProcessIndex = arrivalIndex;
+
+                          //printf("The new burstTime of the currently selected process is %i\n", processes[arrivalIndex+1]);
+
+                          //We are done with the current time unit
+                          currentTime++;
+
+                          //printf("Current time is now: %i after executing burst.\n", currentTime);
+
+                          break;
+
+
+                      }
+
+                      //In this case we are idling this time unit,
+                      if (selectedFirstProcess && numProcessesArrived == 0 && numProcessesFinished != processCount) {
+
+                          //Output Time N: IDLE
+                          printf("Time %i: IDLE\n", currentTime);
+                          fprintf(fp, "Time %i: IDLE\n", currentTime);
+
+                          //We are done with the current time unit
+                          currentTime++;
+
+                          break;
+
+                      }
+
+                      //Scheduler is idle this time unit as ALL processes are finished, output
+                      else if (numProcessesFinished == processCount) {
+
+                        //Output Time N: IDLE
+                        printf("Time %i: IDLE\n", currentTime);
+                        fprintf(fp, "Time %i: IDLE\n", currentTime);
+                        //We are done with the current time unit
+                        currentTime++;
+
+                        break;
+
+
+                      }
+
+
+              }
+
+        }
+      }
+
+
+
+  //Round Robin Scheduler is done, output
+  printf("Finished at time %i\n\n", numTimeUnits);
+  fprintf(fp, "Finished at time %i\n\n", numTimeUnits);
+
+  for (int t = 0; t < (2*processCount); t+=2) {
+
+      printf("%s wait %i turnaround %i\n", processNames[(t/2)], times[t], times[t+1]);
+      fprintf(fp, "%s wait %i turnaround %i\n", processNames[(t/2)], times[t], times[t+1]);
+  }
+
+  fclose(fp);
+
+  return;
+
 }
 // Brandon
 void shortestjobFirst(char *info)

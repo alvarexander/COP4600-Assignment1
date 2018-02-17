@@ -1189,7 +1189,7 @@ int main(void)
 		exit(1);
 	}
 	// Take in the input file
-	input_file = fopen("set1_process.in", "r");
+	input_file = fopen("processes.in", "r");
 
 	if (input_file == NULL)
 	{

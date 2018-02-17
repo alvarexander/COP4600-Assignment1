@@ -138,8 +138,9 @@ void firstcomefirstServe(char *info)
 	int j, timebuff = 0;
 	int waitCount = 0;
 	int turnaroundCount = 0;
+	int i = 0;
 
-	for (int i = 4; i < size; i += 3)
+	for (i = 4; i < size; i += 3)
 	{
 
 		processNames[nameCount] = buffer[i - 1];
@@ -156,7 +157,7 @@ void firstcomefirstServe(char *info)
 	}
 
 
-	int tempArr = 0, tempBurst = 0, x = 0, i = 0;
+	int tempArr = 0, tempBurst = 0, x = 0;
 	char *tempname[100];
 
 
@@ -191,7 +192,7 @@ void firstcomefirstServe(char *info)
 	while (currTime <= timeUnits)
 	{
 
-		for (int i = 0; i < processCount; i++)
+		for (i = 0; i < processCount; i++)
 		{
 			//First arrival 
 			if (currTime == processArrival[i])
@@ -266,7 +267,7 @@ void firstcomefirstServe(char *info)
 		fprintf(ofp, "Finished at time %d", timeUnits);
 		fprintf(ofp, "\n");
 		fprintf(ofp, "\n");
-		for (int i = 0; i < processCount; i++)
+		for ( i = 0; i < processCount; i++)
 			fprintf(ofp, "%s wait %d turnaround %d\n", processNames[i], processWait[i], processTurn[i]);
 
 	}
@@ -336,6 +337,9 @@ void roundRobin(char *info)
 	int processes[2 * processCount];
 	int processesCount = 0;
 	int processNameCount = 0;
+	int i = 0;
+	int j = 0;
+	int q = 0;
 
 	//We also need wait and turnaround times for each process
 	//Logical representation Wait-TurnAround - [waitTime0][turnaroundTime0]...[waitTimeN][turnaroundTimeN]
@@ -347,7 +351,7 @@ void roundRobin(char *info)
 	int immutableProcesses[2 * processCount];
 
 	//Store the data in the new arrays
-	for (int i = 5; i < arrayLen; i += 3) 
+	for ( i = 5; i < arrayLen; i += 3) 
 	{
 
 		processNames[processNameCount] = array[i - 1];
@@ -423,7 +427,7 @@ void roundRobin(char *info)
 		}
 
 		//We are checking each processes arrival time and burstTime on each iteration
-		for (int i = 0; i < (2 * processCount); i += 2) 
+		for ( i = 0; i < (2 * processCount); i += 2) 
 		{
 
 			if (breakForExecution)
@@ -431,7 +435,7 @@ void roundRobin(char *info)
 
 			//The arrival time is equal to the current time --, output Time N: STRING arrived
 			//We need to account for processes that arrive at the same time
-			for (int j = 0; j < (2 * processCount); j += 2) 
+			for (j = 0; j < (2 * processCount); j += 2) 
 			{
 
 				//THE INDEX OF THE ARRIVAL TIME OF THE PROCESS IS WHAT IS STORED IN THE QUEUE
@@ -442,7 +446,7 @@ void roundRobin(char *info)
 
 					int addedToQueue = 0;
 
-					for (int q = 0; q < rrQueue->size; q++) 
+					for ( q = 0; q < rrQueue->size; q++) 
 					{
 
 						if (rrQueue->array[q] == j) 
@@ -684,8 +688,9 @@ void roundRobin(char *info)
 	//Round Robin Scheduler is done, output
 	
 	fprintf(fp, "Finished at time %i\n\n", numTimeUnits);
+	int t;
 
-	for (int t = 0; t < (2 * processCount); t += 2) 
+	for  (t = 0; t < (2 * processCount); t += 2) 
 	{
 
 		fprintf(fp, "%s wait %i turnaround %i\n", processNames[(t / 2)], times[t], times[t + 1]);
@@ -729,6 +734,7 @@ void shortestjobFirst(char *info)
 	{
 		array[++count] = strtok(NULL, "\n\r");
 	}
+	int j = 0;
 
 	//i=2 -- useSJF, has already been processed. Ignore.
 	//Quantum, has been removed for SJF.
@@ -755,9 +761,10 @@ void shortestjobFirst(char *info)
 	//We also need the original burstTimes since we will modify the array
 	int times[2 * processCount];
 	int immutableProcesses[2 * processCount];
+	int i = 0;
 
 	//Store the data in the new arrays
-	for (int i = 4; i < arrayLen; i += 3) {
+	for (i = 4; i < arrayLen; i += 3) {
 
 		processNames[processNameCount] = array[i - 1];
 		processNameCount++;
@@ -809,12 +816,12 @@ void shortestjobFirst(char *info)
 		int currentLowestBurstTime = INT_MAX;
 
 		//We are checking each processes arrival time and burstTime on each iteration
-		for (int i = 0; i < (2 * processCount); i += 2) 
+		for (i = 0; i < (2 * processCount); i += 2) 
 		{
 
 			//The arrival time is equal to the current time -- this will only occur once before selection, output Time N: STRING arrived
 			//We need to account for processes that arrive at the same time
-			for (int i = 0; i < (2 * processCount); i += 2) 
+			for (i = 0; i < (2 * processCount); i += 2) 
 			{
 
 				if (currentTime == processes[i]) 
@@ -881,7 +888,7 @@ void shortestjobFirst(char *info)
 			{
 				
 				//Find the shortest job in the array
-				for (int j = 0; j < (2 * processCount); j += 2) 
+				for (j = 0; j < (2 * processCount); j += 2) 
 				{
 
 					//The arrival time is LEQ to the current time, so it qualifies to have burstTime checked
@@ -1045,8 +1052,9 @@ void shortestjobFirst(char *info)
 	//SJF Scheduler is done, output
 	//printf("Finished at time %i\n\n", numTimeUnits);
 	fprintf(fp, "Finished at time %i\n\n", numTimeUnits);
+	int t;
 
-	for (int t = 0; t < (2 * processCount); t += 2) {
+	for (t = 0; t < (2 * processCount); t += 2) {
 
 		//printf("%s wait %i turnaround %i\n", processNames[(t/2)], times[t], times[t+1]);
 		fprintf(fp, "%s wait %i turnaround %i\n", processNames[(t / 2)], times[t], times[t + 1]);
@@ -1181,7 +1189,7 @@ int main(void)
 		exit(1);
 	}
 	// Take in the input file
-	input_file = fopen("processes.in", "r");
+	input_file = fopen("set1_process.in", "r");
 
 	if (input_file == NULL)
 	{
